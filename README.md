@@ -39,6 +39,22 @@ Cada caso de prueba positivo valida tres frentes, no solo el código HTTP:
    que el guardrail lo detecta y falla el test — es decir, la suite también
    prueba que su propia herramienta de seguridad funciona.
 
+## Protocolo propio sobre TCP (socket crudo)
+
+Además del flujo REST, `toy_protocol_mock/` implementa un protocolo de
+mensajería propio de juguete sobre TCP (framing binario con prefijo de
+longitud de 2 bytes + payload UTF-8, dispatch por tipo de mensaje y códigos de
+respuesta) — el mismo principio que uso en protocolos bancarios reales tipo
+ISO8583, aquí simplificado y con datos 100% inventados. El servidor arranca
+dentro del propio proceso de la suite (`Suite Setup`), así que no depende de
+ningún proceso externo: `robot tests/` lo levanta y lo apaga solo.
+
+## CI
+
+Cada push/PR a `main` dispara `.github/workflows/tests.yml`, que instala
+dependencias y corre toda la suite (REST + TCP) en GitHub Actions, publicando
+el reporte de Robot Framework como artifact descargable.
+
 ## Cómo correrlo
 
 ```bash
@@ -57,10 +73,18 @@ locust -f load_tests/locustfile.py --host https://jsonplaceholder.typicode.com
 
 ## Resultado esperado
 
-- `CP-001` y `CP-002`: **PASS**.
-- `CP-003`: **PASS** (el test pasa porque *confirma correctamente* que el
-  guardrail de seguridad lanza el error esperado — no es un test roto).
+```
+Tests.Posts Regresion          | PASS |
+3 tests, 3 passed, 0 failed
+Tests.Toy Protocol Regresion    | PASS |
+3 tests, 3 passed, 0 failed
+Tests                           | PASS |
+6 tests, 6 passed, 0 failed
+```
+
+`CP-003` pasa porque *confirma correctamente* que el guardrail de seguridad
+lanza el error esperado — no es un test roto.
 
 ## Stack
 
-Python · Robot Framework · RequestsLibrary · SQLite · Locust
+Python · Robot Framework · RequestsLibrary · sockets TCP (framing binario propio) · SQLite · Locust · GitHub Actions
