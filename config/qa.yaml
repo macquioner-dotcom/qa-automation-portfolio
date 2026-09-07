@@ -1,0 +1,5 @@
+environment:
+  base_url: "https://jsonplaceholder.typicode.com"
+
+database:
+  sqlite_path: "data/portfolio.db"
