@@ -1,5 +1,9 @@
 environment:
   base_url: "https://jsonplaceholder.typicode.com"
 
+endpoints:
+  create_post: "/posts"
+  get_post: "/posts/{post_id}"
+
 database:
   sqlite_path: "data/portfolio.db"

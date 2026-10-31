@@ -1,0 +1,12 @@
+[lint]
+configure = [
+    "wrong-case-in-keyword-name.convention=each_word_capitalized:severity=W",
+    "line-too-long.line_length=120",
+    "too-long-test-case.max_len=30",
+    "too-many-calls-in-test-case.max_calls=15",
+    "return_status.quality_gate=E=0:W=-1",
+]
+ignore = [
+    "missing-doc-test-case",
+]
+reports = ["json_report", "return_status"]
