@@ -3,3 +3,4 @@ robotframework-requests==0.9.7
 robotframework-databaselibrary==1.4.4
 PyYAML==6.0.2
 locust==2.32.3
+robotframework-robocop==8.3.2

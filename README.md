@@ -1,5 +1,7 @@
 # QA Automation Portfolio — Arquitectura de 4 capas + Triple Validación
 
+[![QA Automation Tests](https://github.com/macquioner-dotcom/qa-automation-portfolio/actions/workflows/tests.yml/badge.svg)](https://github.com/macquioner-dotcom/qa-automation-portfolio/actions/workflows/tests.yml)
+
 Proyecto de portafolio que reproduce, contra una API pública gratuita
 ([jsonplaceholder.typicode.com](https://jsonplaceholder.typicode.com)), el mismo
 estándar de automatización E2E que uso profesionalmente sobre microservicios
@@ -49,11 +51,31 @@ ISO8583, aquí simplificado y con datos 100% inventados. El servidor arranca
 dentro del propio proceso de la suite (`Suite Setup`), así que no depende de
 ningún proceso externo: `robot tests/` lo levanta y lo apaga solo.
 
+## Seguridad en el ciclo de desarrollo
+
+La suite no solo prueba funcionalidad: también actúa como control de
+seguridad dentro del pipeline (Secure SDLC).
+
+- **Guardrail de datos sensibles** (`libraries/security_scanner.py`): cada
+  respuesta se escanea buscando tokens y contraseñas sin enmascarar. Si
+  aparece uno, el test falla y el pipeline se detiene. Es una versión
+  simplificada del escáner que uso en proyectos reales, donde además cubre
+  PIN, CVV, PAN, credenciales, IPs internas y stack traces en logs.
+- **Prueba negativa del propio control** (`CP-003`): envía a propósito un
+  token expuesto y confirma que el guardrail lo detecta. Así la suite
+  demuestra que su herramienta de seguridad funciona, no solo que existe.
+- **Sin secretos en el código**: URLs y endpoints viven en `config/qa.yaml`;
+  los `.robot` y `.resource` no tienen valores de entorno hardcodeados.
+
 ## CI
 
-Cada push/PR a `main` dispara `.github/workflows/tests.yml`, que instala
-dependencias y corre toda la suite (REST + TCP) en GitHub Actions, publicando
-el reporte de Robot Framework como artifact descargable.
+Cada push/PR a `main` dispara `.github/workflows/tests.yml`, que:
+
+1. Corre **Robocop** (análisis estático) con quality gate definido en
+   `robocop.toml`: cualquier error bloquea el pipeline; los warnings se
+   reportan sin bloquear.
+2. Ejecuta toda la suite (REST + TCP).
+3. Publica el reporte de Robot Framework como artifact descargable.
 
 ## Cómo correrlo
 
@@ -87,4 +109,4 @@ lanza el error esperado — no es un test roto.
 
 ## Stack
 
-Python · Robot Framework · RequestsLibrary · sockets TCP (framing binario propio) · SQLite · Locust · GitHub Actions
+Python · Robot Framework · RequestsLibrary · sockets TCP (framing binario propio) · SQLite · Locust · Robocop · GitHub Actions

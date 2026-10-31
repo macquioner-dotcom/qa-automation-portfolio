@@ -19,6 +19,9 @@ jobs:
       - name: Instalar dependencias
         run: pip install -r requirements.txt
 
+      - name: Analisis estatico con Robocop (quality gate)
+        run: robocop check
+
       - name: Ejecutar suite Robot Framework
         run: robot --outputdir TestResults tests/
 
